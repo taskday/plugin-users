@@ -2,14 +2,14 @@
 
 namespace Performing\Taskday\Users\Listeners;
 
-use App\Events\CardUpdatedEvent;
 use Taskday\Models\Card;
 use Taskday\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Auth;
-use Performing\Taskday\Users\Events\UserTaggedEvent;
 use Performing\Taskday\Users\Notifications\UserTaggedNotification;
+use Taskday\Events\CardCreatedEvent;
+use Taskday\Events\CardUpdatedEvent;
 
 class SendNotificationToTaggedUsers implements ShouldQueue
 {
@@ -21,7 +21,7 @@ class SendNotificationToTaggedUsers implements ShouldQueue
      * @param  object  $event
      * @return void
      */
-    public function handle(UserTaggedEvent $event)
+    public function handle(CardUpdatedEvent|CardCreatedEvent $event)
     {
         $card = Card::find($event->cardId);
 
@@ -29,10 +29,9 @@ class SendNotificationToTaggedUsers implements ShouldQueue
         preg_match_all($re, $card->content, $matches, PREG_SET_ORDER, 0);
 
         foreach ($matches as $id) {
-            // if (Auth::id() != $id) {
-            // }
+            if (Auth::id() != $id) {
+                User::find($id)->first()->notify(new UserTaggedNotification($event->cardId));
+            }
         }
-
-        User::find($id)->first()->notify(new UserTaggedNotification($event->cardId));
     }
 }

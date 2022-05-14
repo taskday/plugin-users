@@ -36,7 +36,7 @@ class UserTaggedNotification extends Notification implements ShouldBroadcast
      */
     public function via($notifiable)
     {
-        return ['database', 'broadcast',  WebPushChannel::class];
+        return ['database', 'broadcast',  WebPushChannel::class, 'mail'];
     }
 
     /**

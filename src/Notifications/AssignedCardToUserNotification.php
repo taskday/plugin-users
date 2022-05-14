@@ -36,7 +36,7 @@ class AssignedCardToUserNotification extends Notification implements ShouldBroad
      */
     public function via($notifiable)
     {
-        return ['database', WebPushChannel::class];
+        return ['database', 'broadcast', WebPushChannel::class, 'mail'];
     }
 
     /**
@@ -48,9 +48,8 @@ class AssignedCardToUserNotification extends Notification implements ShouldBroad
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+                ->line(Auth::user()->name . ' assigned the card ' . $this->card->title .  ' to you')
+                ->action('View', route('cards.show', $this->card));
     }
 
     /**
@@ -62,7 +61,7 @@ class AssignedCardToUserNotification extends Notification implements ShouldBroad
     public function toArray($notifiable)
     {
         return [
-            'title' => 'Tagged you!',
+            'title' => Auth::user()->name . ' assigned the card ' . $this->card->title .  ' to you',
             'body' => substr(strip_tags($this->card->title), 0, 100) . '...',
             'user' => Auth::user(),
             'url' => route('cards.show', $this->card),
@@ -80,7 +79,7 @@ class AssignedCardToUserNotification extends Notification implements ShouldBroad
     public function toWebPush($notifiable, $notification)
     {
         return (new WebPushMessage)
-            ->title('Tagged you!')
+            ->title(Auth::user()->name . ' assigned the card ' . $this->card->title .  ' to you')
             ->icon('/faicons/256.png')
             ->body(substr(strip_tags($this->card->title), 0, 100) . '...')
             ->action('View', route('cards.show', [$this->card]))

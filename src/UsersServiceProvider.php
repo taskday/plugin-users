@@ -39,7 +39,7 @@ class UsersServiceProvider extends ServiceProvider
         );
         
         Event::listen(
-            [CardCreatedEvent::class, CardUpdatedEvent::class, ],
+            [CardCreatedEvent::class, CardUpdatedEvent::class],
             [SendNotificationToTaggedUsers::class, 'handle']
         );
     }
