@@ -5,6 +5,7 @@ namespace Performing\Taskday\Users\Notifications;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
@@ -37,6 +38,17 @@ class AssignedCardToUserNotification extends Notification implements ShouldBroad
     public function via($notifiable)
     {
         return ['database', 'broadcast', WebPushChannel::class, 'mail'];
+    }
+
+    /**
+     * Get the broadcastable representation of the notification.
+     *
+     * @param  mixed  $notifiable
+     * @return BroadcastMessage
+     */
+    public function toBroadcast($notifiable)
+    {
+        return new BroadcastMessage($this->toArray($notifiable));
     }
 
     /**
