@@ -21,7 +21,7 @@ class SendNotificationToTaggedUsers implements ShouldQueue
      * @param  object  $event
      * @return void
      */
-    public function handle(CardUpdatedEvent|CardCreatedEvent $event)
+    public function handle($event)
     {
         $card = Card::find($event->cardId);
 
@@ -30,7 +30,7 @@ class SendNotificationToTaggedUsers implements ShouldQueue
 
         foreach ($matches as $id) {
             if (Auth::id() != $id) {
-                User::find($id)->first()->notify(new UserTaggedNotification($event->cardId));
+                User::find($id)->first()->notify(new UserTaggedNotification($card));
             }
         }
     }
